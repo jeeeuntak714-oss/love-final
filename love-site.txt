@@ -1,0 +1,115 @@
+love-site/
+│
+├──love.py (from flask import Flask, render_template, request, redirect, url_for
+import os
+
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'static/uploads'
+
+# Make sure upload folder exists
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+
+messages = []
+
+@app.route("/", methods=["GET", "POST"])
+def home():
+    if request.method == "POST":
+        text = request.form.get("message")
+        gif = request.form.get("gif")
+        file = request.files.get("image")
+
+        image_filename = None
+        if file and file.filename != "":
+            image_path = os.path.join(app.config['UPLOAD_FOLDER'], file.filename)
+            file.save(image_path)
+            image_filename = file.filename
+
+        messages.append({
+            "text": text,
+            "gif": gif,
+            "image": image_filename
+        })
+
+        return redirect(url_for("home"))
+
+    return render_template("index.html", messages=messages)
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=10000)
+
+├── requirements.txt(flask
+gunicorn))
+├── templates/
+│     └── index.html (<!DOCTYPE html>
+<html>
+<head>
+    <title>Drop Your Love 💖</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+
+<h1>Leave Something Sweet 💌</h1>
+
+<form method="POST" enctype="multipart/form-data">
+    <input type="text" name="message" placeholder="Write your message..." required>
+    <input type="text" name="gif" placeholder="Paste GIF link (optional)">
+    <input type="file" name="image">
+    <button type="submit">Post 💕</button>
+</form>
+
+<div class="messages">
+    {% for msg in messages %}
+        <div class="card">
+            <p>{{ msg.text }}</p>
+
+            {% if msg.image %}
+                <img src="{{ url_for('static', filename='uploads/' + msg.image) }}">
+            {% endif %}
+
+            {% if msg.gif %}
+                <img src="{{ msg.gif }}">
+            {% endif %}
+        </div>
+    {% endfor %}
+</div>
+
+<audio autoplay loop>
+    <source src="{{ url_for('static', filename='music.mp3') }}" type="audio/mpeg">
+</audio>
+
+</body>
+</html>
+)
+├── static/
+│     ├── style.css(body {
+    background: linear-gradient(to right, #ffdde1, #ee9ca7);
+    font-family: Arial, sans-serif;
+    text-align: center;
+    padding: 20px;
+}
+
+h1 {
+    color: white;
+}
+
+form input, form button {
+    padding: 10px;
+    margin: 5px;
+}
+
+.card {
+    background: white;
+    margin: 20px auto;
+    padding: 15px;
+    width: 300px;
+    border-radius: 15px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.card img {
+    max-width: 100%;
+    border-radius: 10px;
+}
+)
+│     ├── uploads/
+│     └── music.mp3
