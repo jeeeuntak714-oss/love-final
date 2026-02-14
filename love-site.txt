@@ -1,6 +1,6 @@
 love-site/
 │
-├──love.py (from flask import Flask, render_template, request, redirect, url_for
+├──app.py (from flask import Flask, render_template, request, redirect, url_for
 import os
 
 app = Flask(__name__)
@@ -113,3 +113,4 @@ form input, form button {
 )
 │     ├── uploads/
 │     └── music.mp3
+
